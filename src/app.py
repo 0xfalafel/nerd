@@ -68,10 +68,9 @@ class MainWindow(Gtk.ApplicationWindow):
         )
         self.first_pane.append(self.left_scrolledwindow)
 
-        self.textview = Gtk.TextView(
+        self.textview = NerdText(
             margin_start = 20
         )
-        #self.textview.set_
         self.left_scrolledwindow.set_child(self.textview)
 
         self.textbuffer = self.textview.get_buffer();
@@ -93,6 +92,18 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def hello(self, button):
         print("Hi mom !")
+
+class NerdText(Gtk.TextView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.buffer = self.get_buffer()
+        self.buffer.connect('changed', self.my_func)
+
+    def my_func(self, textbuf):
+        #help(textbuf)        
+        text = textbuf.get_text(textbuf.get_start_iter(), textbuf.get_end_iter(), True)
+        print(text)
 
 class MyApp(Gtk.Application):
     def __init__(self, **kwargs):
