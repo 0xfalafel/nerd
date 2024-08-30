@@ -1,7 +1,17 @@
-.flat {
-    background-color: #FFFFFF;
+.headerbar {
+    border-radius: 0;
+    border: none;
+    background-image: none;
+    box-shadow: none;
+}
+
+.input-text {
     font-size: 18px;
     line-height: 30px;
+}
+
+.flat {
+    background-color: #FFFFFF;
 }
 
 .right_pane {

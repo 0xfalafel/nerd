@@ -11,6 +11,9 @@ class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        settings = Gtk.Settings.get_default()
+        #settings.set_property('gtk-application-prefer-dark-theme', True)
+
         self.set_default_size(600, 400)
         self.set_title("")
 
@@ -38,7 +41,7 @@ class MainWindow(Gtk.ApplicationWindow):
         # First headerbar
         self.first_headerbar = Gtk.HeaderBar(
             show_title_buttons=False,
-            css_classes=['flat']
+            css_classes=['view', 'headerbar']
         )
         self.first_headerbar.pack_start(Gtk.WindowControls())
         self.first_pane.append(self.first_headerbar)
@@ -52,7 +55,7 @@ class MainWindow(Gtk.ApplicationWindow):
         # Second Headerbar
         self.second_headerbar = Gtk.HeaderBar(
             show_title_buttons=False,
-            css_classes=['right_pane']
+            css_classes=['sidebar', 'headerbar']
         )
         window_control = Gtk.WindowControls(
             side=Gtk.PackType.END
@@ -64,7 +67,7 @@ class MainWindow(Gtk.ApplicationWindow):
         # TextView of First Pane
         self.left_scrolledwindow = Gtk.ScrolledWindow(
             vexpand=True,
-            css_classes=['flat']
+            css_classes=['view', 'headerbar', 'input-text']
         )
         self.first_pane.append(self.left_scrolledwindow)
 
@@ -84,7 +87,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.resultview = Gtk.TextView(
             editable=False,
-            css_classes=['right_pane']
+            #css_classes=['right_pane']
+            css_classes=['sidebar']
         )
         self.right_scrolledwindow.set_child(self.resultview)
 
@@ -98,12 +102,35 @@ class NerdText(Gtk.TextView):
         super().__init__(*args, **kwargs)
 
         self.buffer = self.get_buffer()
-        self.buffer.connect('changed', self.my_func)
+        self.buffer.connect('changed', self.extact_text)
+
 
     def my_func(self, textbuf):
-        #help(textbuf)        
-        text = textbuf.get_text(textbuf.get_start_iter(), textbuf.get_end_iter(), True)
+        help(textbuf)        
+        text = textbuf.get_text(textbuf.get_iter_at_line(), textbuf.get_end_iter(), True)
         print(text)
+
+    def extact_text(self, textbuf):
+        lines = textbuf.get_line_count()
+        extract = []
+
+        for i in range(0, lines):
+            _, start = textbuf.get_iter_at_line(i)
+            not_last_line, end = textbuf.get_iter_at_line(i+1)
+
+            if not not_last_line:
+                _, end = textbuf.get_bounds()
+
+            text = textbuf.get_text(start, end, True)
+            extract.append(text)
+            # print(f"{i}: {text}", end="")
+
+        print(f"-------------------")
+
+        for line in extract:
+            print(line, end="")
+
+        print("")
 
 class MyApp(Gtk.Application):
     def __init__(self, **kwargs):
